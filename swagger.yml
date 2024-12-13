@@ -1,0 +1,211 @@
+# swagger.yml
+
+openapi: 3.0.0
+info: 
+  title: "RP Flask REST API"
+  description: "An API about Trails around the world"
+  version: "1.0.0"
+
+servers:
+  - url: "/api"
+
+
+components:
+  schemas:
+    Trail:
+      type: "object"
+      required:
+        - TrailId
+      properties:
+        TrailID:
+          type: "integer"
+        Trailname:
+          type: "string"
+        Summary:
+          type: "string"
+        Description:
+          type: "string"
+        Difficulty:
+          type: "string"
+        Location:
+          type: "string"
+        Length:
+          type: "integer"
+        Elevationgain:
+          type: "integer"
+        RouteType:
+          type: "string"
+        OwnerID:
+          type: "integer"
+        Pt1_Lat:
+          type: "integer"  
+        Pt1_Long:
+          type: "integer"
+        Pt1_Desc:
+          type: "string"
+        Pt2_Lat:
+          type: "integer"
+        Pt2_Long:
+          type: "integer"
+        Pt2_Desc:
+          type: "string"
+        Pt3_Lat:
+          type: "integer"
+        Pt3_Long:
+          type: "integer"
+        Pt3_Desc:
+          type: "string"
+        Pt4_Lat:
+          type: "integer"
+        Pt4_Long:
+          type: "integer"
+        Pt4_Desc:
+          type: "string"
+        Pt5_Lat:
+          type: "integer"
+        Pt5_Long:
+          type: "integer"
+        Pt5_Desc:
+          type: "string"
+    Link:
+      type: "object"
+      required:
+        - TrailId
+        - FeatureId
+      properties:
+        TrailID:
+          type: "integer"
+        FeatureId:
+          type: "integer"
+    AccountDetails:
+      type: "object"
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: "string"
+        password:
+          type: "string"
+  parameters:
+    trailId:
+      name: "trailId"
+      description: "Id of the trail to get"
+      in: path
+      required: True
+      schema:
+        type: "integer"
+
+paths:
+  /Authenticate:
+    post:
+      operationId: "trails.Authenticate"
+      summary: "Authenticate user and return token"
+      tags:
+        - "Authentication"
+      requestBody:
+        description: "Login credentials"
+        required: true
+        content:
+          application/json:
+            schema:
+              x-body-name: "body"
+              $ref: "#/components/schemas/AccountDetails"
+      responses:
+        "200":        
+          description: "Authentication successful"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    description: "JWT or session token"
+        "401":
+          description: "Invalid credentials"
+  /AdminAll:
+    get:
+      operationId: "trails.read_all"
+      tags:
+        - "Trail"
+      summary: "Read the database for all trails"
+      responses:
+        "200":
+          description: "Successfully read all trails"
+  /Admin/{trailId}:
+    get:
+      operationId: "trails.read_one"
+      tags:
+        - "Trail"
+      summary: "gets one trail based on id"
+      parameters:
+        - $ref: "#/components/parameters/trailId"
+      responses:
+        "200":
+          description: "Successfully read trail data"
+  /createTrail:
+    post:
+      operationId: "trails.create_trail"
+      tags:
+        - "Trail"
+      summary: "creates a new trail"
+      requestBody:
+        description: "Trail to create"
+        required: True
+        content:
+          application/json:
+            schema:
+              x-body-name: "body"
+              $ref: "#/components/schemas/Trail"
+      responses:
+        "201":
+          description: "Successfully added trail"
+
+  /addfeatures:
+    post:
+      operationId: "trails.LinkFeature"
+      tags:
+        - "Feature"
+      summary: "creates a new link to a feature"
+      requestBody:
+        description: "Feature to link"
+        required: True
+        content:
+          application/json:
+            schema:
+              x-body-name: "body"
+              $ref: "#/components/schemas/Link"
+      responses:
+        "201":
+          description: "Successfully added Link"
+
+  /updatetrail/{trailId}:
+    put:
+      tags:
+        - "Trail"
+      operationId: "trails.update"
+      summary: "Update a trail"
+      parameters:
+        - $ref: "#/components/parameters/trailId"
+      responses:
+        "200":
+          description: "Successfully updated trail"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              x-body-name: "trail"
+              $ref: "#/components/schemas/Trail"
+  /deletetrail/{trailId}:
+    delete:
+      tags:
+        - "Trail"
+      operationId: "trails.delete"
+      summary: "Delete a trail"
+      parameters:
+        - $ref: "#/components/parameters/trailId"
+      responses:
+        "204":
+          description: "Successfully deleted trail"
+  
